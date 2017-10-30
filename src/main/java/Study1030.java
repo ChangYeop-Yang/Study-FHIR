@@ -1,4 +1,5 @@
 import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.model.dstu2.composite.*;
 import ca.uhn.fhir.model.dstu2.resource.Device;
 import ca.uhn.fhir.model.dstu2.resource.DeviceComponent;
@@ -6,10 +7,12 @@ import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceStatusEnum;
+import ca.uhn.fhir.model.primitive.BaseDateTimeDt;
+import ca.uhn.fhir.model.primitive.InstantDt;
+import net.sf.saxon.functions.CurrentDateTime;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Study1030 {
 
@@ -45,7 +48,7 @@ public class Study1030 {
         mDevice.setLocation(new ResourceReferenceDt().setDisplay("Location/10811"));
         mDevice.setPatient(new ResourceReferenceDt().setDisplay("Patient/10810"));
 
-        final List<ContactPointDt> mList = new LinkedList<ContactPointDt>();
+        final List<ContactPointDt> mList = new ArrayList<ContactPointDt>();
         mList.add(new ContactPointDt().setValue("01045829311").setUse(ContactPointUseEnum.MOBILE));
         mDevice.setContact(mList);
 
@@ -67,6 +70,12 @@ public class Study1030 {
         mDeviceComponent.setType(mCodeableConceptDt);
 
         mDeviceComponent.setIdentifier(new IdentifierDt().setSystem("http://www.vanilla.co.kr").setValue("mds001"));
+        mDeviceComponent.setLastSystemChange((InstantDt) new InstantDt().setValue(Calendar.getInstance().getTime()));
+        mDeviceComponent.setSource(new ResourceReferenceDt().setReference(UUID.randomUUID().toString()));
+
+        final List<CodeableConceptDt> mLists = new ArrayList<CodeableConceptDt>();
+        mLists.add(new CodeableConceptDt().addCoding(new CodingDt().setCode("on")));
+        mDeviceComponent.setOperationalStatus(mLists);
 
         final String mString = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mDeviceComponent);
         System.out.println(mString);
