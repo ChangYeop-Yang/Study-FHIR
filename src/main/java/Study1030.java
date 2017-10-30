@@ -1,11 +1,10 @@
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.model.dstu2.composite.*;
-import ca.uhn.fhir.model.dstu2.resource.Device;
-import ca.uhn.fhir.model.dstu2.resource.DeviceComponent;
-import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.resource.*;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
+import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricCategoryEnum;
+import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricOperationalStatusEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceStatusEnum;
 import ca.uhn.fhir.model.primitive.BaseDateTimeDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
@@ -20,9 +19,6 @@ public class Study1030 {
 
         final Study1030 mStudy = new Study1030();
 
-        final Patient mPatient = new Patient();
-        mStudy.makePatient(mPatient);
-
         final Device mDevice = new Device();
         mStudy.makeDevice(mDevice);
 
@@ -31,6 +27,9 @@ public class Study1030 {
 
         final DeviceComponent mDeviceComponent = new DeviceComponent();
         mStudy.makeDeviceComponent(mDeviceComponent);
+
+        final DeviceMetric mDeviceMetric = new DeviceMetric();
+        mStudy.makeDeviceMetric(mDeviceMetric);
     }
 
     private void makeDevice(final Device mDevice) {
@@ -56,12 +55,22 @@ public class Study1030 {
         System.out.println(mString);
     }
 
-    private void makePatient(final Patient mPatient) {
+    private void makeObservation(final Observation mObservation) {
 
     }
 
-    private void makeObservation(final Observation mObservation) {
+    private void makeDeviceMetric(final DeviceMetric mDeviceMetric) {
+        mDeviceMetric.setType(new CodeableConceptDt().addCoding(new CodingDt().setSystem("https://rtmms.nist.gov").setCode("150020").setDisplay("MDC_PRESS_BLD_NONINV")));
+        mDeviceMetric.setIdentifier(new IdentifierDt().setSystem("http://www.vanilla.kr").setValue("metric001"));
 
+        mDeviceMetric.setUnit(new CodeableConceptDt().addCoding(new CodingDt().setSystem("https://rtmms.nist.gov").setCode("266016").setDisplay("MDC_DIM_MMHG")));
+        mDeviceMetric.setSource(new ResourceReferenceDt().setReference(UUID.randomUUID().toString()));
+        mDeviceMetric.setParent(new ResourceReferenceDt().setReference(UUID.randomUUID().toString()));
+        mDeviceMetric.setOperationalStatus(DeviceMetricOperationalStatusEnum.ON);
+        mDeviceMetric.setCategory(DeviceMetricCategoryEnum.MEASUREMENT);
+
+        final String mString = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mDeviceMetric);
+        System.out.println(mString);
     }
 
     private void makeDeviceComponent(final DeviceComponent mDeviceComponent) {
