@@ -4,16 +4,14 @@ import ca.uhn.fhir.model.dstu2.resource.Device;
 import ca.uhn.fhir.model.dstu2.resource.DeviceComponent;
 import ca.uhn.fhir.model.dstu2.resource.DeviceMetric;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricCategoryEnum;
-import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricOperationalStatusEnum;
-import ca.uhn.fhir.model.dstu2.valueset.DeviceStatusEnum;
+import ca.uhn.fhir.model.dstu2.valueset.*;
+import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
+import java.sql.Date;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class Study1030 {
 
@@ -24,14 +22,14 @@ public class Study1030 {
         final Device mDevice = new Device();
         mStudy.makeDevice(mDevice);
 
-        final Observation mObservation = new Observation();
-        mStudy.makeObservation(mObservation);
-
         final DeviceComponent mDeviceComponent = new DeviceComponent();
         mStudy.makeDeviceComponent(mDeviceComponent);
 
         final DeviceMetric mDeviceMetric = new DeviceMetric();
         mStudy.makeDeviceMetric(mDeviceMetric);
+
+        final Observation mObservation = new Observation();
+        mStudy.makeObservation(mObservation);
     }
 
     private void makeDevice(final Device mDevice) {
@@ -59,6 +57,35 @@ public class Study1030 {
 
     private void makeObservation(final Observation mObservation) {
 
+        final List<IdentifierDt> mLists = new ArrayList<IdentifierDt>();
+        mLists.add(new IdentifierDt().setSystem("http://www.knu.ac.kr").setValue("bpm001"));
+        mObservation.setIdentifier(mLists);
+
+        mObservation.setStatus(ObservationStatusEnum.REGISTERED);
+        mObservation.setCode(new CodeableConceptDt().addCoding(new CodingDt().setSystem("https://rtmms.nist.gov").setCode("150020")
+            .setDisplay("MDC_PRESS_BLD_NONINV")));
+
+        mObservation.setSubject(new ResourceReferenceDt().setReference(UUID.randomUUID().toString()));
+
+        mObservation.setEffective(new DateTimeDt().setValue(new Date(System.currentTimeMillis())));
+        mObservation.setBodySite(new CodeableConceptDt().addCoding(new CodingDt().setSystem("http://snomed.info/sct").setCode("368209003")));
+        mObservation.setDevice(new ResourceReferenceDt().setReference(UUID.randomUUID().toString()));
+
+        final List<Observation.Component> mComponentList = new ArrayList<Observation.Component>();
+        mComponentList.add(new Observation.Component().setCode(new CodeableConceptDt().addCoding(
+                new CodingDt().setSystem("https://rtmms.nist.gov").setCode("150021").setDisplay("MDC_PRESS_BLD_NONINV_SYS")))
+                .setValue(new QuantityDt().setValue(120).setUnit("mm[Hg]")));
+        mComponentList.add(new Observation.Component().setCode(new CodeableConceptDt()
+                .addCoding(new CodingDt().setSystem("https://rtmms.nist.gov").setCode("150022").setDisplay("MDC_PRESS_BLD_NONINV_DIA")))
+                .setValue(new QuantityDt().setValue(80).setUnit("mm[Hg]")));
+        mComponentList.add(new Observation.Component().setCode(new CodeableConceptDt()
+                .addCoding(new CodingDt().setSystem("https://rtmms.nist.gov").setCode("150023").setDisplay("MDC_PRESS_BLD_NONINV_MEAN")))
+                .setValue(new QuantityDt().setValue(100).setUnit("mm[Hg]")));
+
+        mObservation.setComponent(mComponentList);
+
+        final String mString = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mObservation);
+        System.out.println(mString);
     }
 
     private void makeDeviceMetric(final DeviceMetric mDeviceMetric) {
