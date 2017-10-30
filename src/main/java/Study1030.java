@@ -1,17 +1,19 @@
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.TemporalPrecisionEnum;
 import ca.uhn.fhir.model.dstu2.composite.*;
-import ca.uhn.fhir.model.dstu2.resource.*;
+import ca.uhn.fhir.model.dstu2.resource.Device;
+import ca.uhn.fhir.model.dstu2.resource.DeviceComponent;
+import ca.uhn.fhir.model.dstu2.resource.DeviceMetric;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricCategoryEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceMetricOperationalStatusEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceStatusEnum;
-import ca.uhn.fhir.model.primitive.BaseDateTimeDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
-import net.sf.saxon.functions.CurrentDateTime;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
 
 public class Study1030 {
 
