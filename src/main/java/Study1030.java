@@ -1,8 +1,8 @@
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.dstu2.composite.CodeableConceptDt;
-import ca.uhn.fhir.model.dstu2.composite.ContactPointDt;
-import ca.uhn.fhir.model.dstu2.composite.ResourceReferenceDt;
+import ca.uhn.fhir.model.dstu2.composite.*;
 import ca.uhn.fhir.model.dstu2.resource.Device;
+import ca.uhn.fhir.model.dstu2.resource.DeviceComponent;
+import ca.uhn.fhir.model.dstu2.resource.Observation;
 import ca.uhn.fhir.model.dstu2.resource.Patient;
 import ca.uhn.fhir.model.dstu2.valueset.ContactPointUseEnum;
 import ca.uhn.fhir.model.dstu2.valueset.DeviceStatusEnum;
@@ -17,11 +17,20 @@ public class Study1030 {
 
         final Study1030 mStudy = new Study1030();
 
+        final Patient mPatient = new Patient();
+        mStudy.makePatient(mPatient);
+
         final Device mDevice = new Device();
         mStudy.makeDevice(mDevice);
+
+        final Observation mObservation = new Observation();
+        mStudy.makeObservation(mObservation);
+
+        final DeviceComponent mDeviceComponent = new DeviceComponent();
+        mStudy.makeDeviceComponent(mDeviceComponent);
     }
 
-    private void makeDevice(Device mDevice) {
+    private void makeDevice(final Device mDevice) {
         mDevice.addIdentifier().setSystem("http://acme.org/devices/serialnumber").setValue("1111");
 
         CodeableConceptDt mCodeableConceptDt = new CodeableConceptDt();
@@ -44,7 +53,22 @@ public class Study1030 {
         System.out.println(mString);
     }
 
-        private void makePatient(Patient mPatient) {
+    private void makePatient(final Patient mPatient) {
 
-        }
+    }
+
+    private void makeObservation(final Observation mObservation) {
+
+    }
+
+    private void makeDeviceComponent(final DeviceComponent mDeviceComponent) {
+        final CodeableConceptDt mCodeableConceptDt = new CodeableConceptDt();
+        mCodeableConceptDt.addCoding().setSystem("urn:iso:std:iso:11073:10101").setCode("4173").setDisplay("MDC_DEV_ANALY_PRESS_BLD_MDS");
+        mDeviceComponent.setType(mCodeableConceptDt);
+
+        mDeviceComponent.setIdentifier(new IdentifierDt().setSystem("http://www.vanilla.co.kr").setValue("mds001"));
+
+        final String mString = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mDeviceComponent);
+        System.out.println(mString);
+    }
 }
