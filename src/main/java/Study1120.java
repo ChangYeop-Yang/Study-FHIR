@@ -1,21 +1,23 @@
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.model.dstu2.composite.*;
+import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.dstu2.valueset.IdentifierUseEnum;
-import ca.uhn.fhir.model.dstu2.valueset.ObservationStatusEnum;
+import ca.uhn.fhir.model.dstu2.resource.Patient;
+import ca.uhn.fhir.model.dstu2.valueset.*;
+import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
-import org.hl7.fhir.instance.model.CodeableConcept;
-import org.hl7.fhir.instance.model.Quantity;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.UUID;
 
 public class Study1120 {
 
@@ -56,14 +58,14 @@ public class Study1120 {
         JButton button = new JButton("전송");
 
         public MyJFrame() {
-            setBounds(800, 280, 550, 370);
+            setBounds(800, 280, 550, 500);
             setName("KNU Client");
 
             patientInfo.setPreferredSize(new Dimension(250, 210));
             patientInfo.setBorder(new TitledBorder(null, "환자정보", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 
             JPanel name = new JPanel();
-            name.setPreferredSize(new Dimension(240,50));
+            name.setPreferredSize(new Dimension(240,60));
             name.add(familyNameLabel);
             name.add(familyName);
             name.add(givenNameLabel);
@@ -72,7 +74,7 @@ public class Study1120 {
             name.add(phone);
             patientInfo.add(name);
 
-            JPanel birth = new JPanel();
+            final JPanel birth = new JPanel();
             birth.setPreferredSize(new Dimension(240, 50));
             birth.add(birthDateLabel);
             birth.add(birthDate);
@@ -87,7 +89,7 @@ public class Study1120 {
             patientInfo.add(female);
             contentpane.add(patientInfo);
 
-            observationInfo.setPreferredSize(new Dimension(250, 210));
+            observationInfo.setPreferredSize(new Dimension(250, 250));
             observationInfo.setBorder(new TitledBorder(null, "측정값", TitledBorder.LEADING, TitledBorder.TOP, null, null));
             observationInfo.add(bpSYSLabel);
             observationInfo.add(bpSYS);
@@ -111,6 +113,20 @@ public class Study1120 {
             button.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
 
+                    final Study1120 mStudy = new Study1120();
+
+                    final Bundle mBundle = new Bundle();
+                    mBundle.setType(BundleTypeEnum.TRANSACTION);
+
+                    final Observation mObservation = new Observation();
+                    mStudy.makeObservation(mObservation, Integer.valueOf(bpGLUCOSE.getText()), Integer.valueOf(bpSYS.getText()),
+                            Integer.valueOf(bpDIA.getText()), Integer.valueOf(bpMEAN.getText()), mBundle);
+
+                    final Patient mPatient = new Patient();
+                    final String sGender = male.isSelected() ? "남자" : "여자";
+                    mStudy.makePatient(mBundle, mPatient, phone.getText(), birthDate.getText(), sGender, givenName.getText(), familyName.getText());
+
+                    mStudy.sendServer(mBundle, srverAddress.getText());
                 }
             });
 
@@ -123,16 +139,10 @@ public class Study1120 {
     }
 
     public static void main(String[] args) {
-
-        final Study1120 mStudy = new Study1120();
-
         final MyJFrame mFrame = new MyJFrame();
-
-        final Observation mObservation = new Observation();
-        mStudy.makeObservation(mObservation);
     }
 
-    private void makeObservation(final Observation mObservation) {
+    private void makeObservation(final Observation mObservation, final int mGlo, final int mSys, final int mDial, final int mMEAN, final Bundle mBundle) {
         mObservation.setId("f001");
 
         ArrayList<IdentifierDt> mList = new ArrayList<IdentifierDt>(10);
@@ -145,21 +155,58 @@ public class Study1120 {
 
         mObservation.setCode(new CodeableConceptDt().addCoding(new CodingDt().setSystem("http://loinc.org").setCode("15074-8").setDisplay("Glucose [Moles/volume] in Blood")));
         mObservation.setSubject(new ResourceReferenceDt().setReference("Patient001").setDisplay("P. van de Heuvel"));
-        mObservation.setEffective(new IdentifierDt().setPeriod(new PeriodDt().setStart((DateTimeDt) new DateTimeDt().setValue(new Date()))));
+        mObservation.setEffective(new PeriodDt().setStart((DateTimeDt) new DateTimeDt().setValue(new Date())));
         mObservation.setIssued((InstantDt) new InstantDt().setValue(new Date()));
 
         ArrayList<ResourceReferenceDt> mResourceReferenceDtList = new ArrayList<ResourceReferenceDt>(10);
-        mResourceReferenceDtList.add(new ResourceReferenceDt().setReference("Practitioner/f005"));
-        mResourceReferenceDtList.add(new ResourceReferenceDt().setDisplay("A. Langeveld"));
+        mResourceReferenceDtList.add(new ResourceReferenceDt().setReference("Practitioner/f005").setDisplay("A. Langeveld"));
         mObservation.setPerformer(mResourceReferenceDtList);
 
-        Quantity mQuantity = new Quantity();
-        mQuantity.setValue(BigDecimal.valueOf(6.3));
-        mQuantity.setUnit("mmol/l");
-        CodeableConcept compoCOdel = new CodeableConcept();
-        compoCOdel.addCoding().setSystem("http://unitsofmeasure.org").setCode("mmol/L");;
+        mObservation.addComponent().setValue(new QuantityDt().setValue(mGlo).setUnit("mmol/l").setSystem("http://unitsofmeasure.org").setCode("mmol/L"));
+        mObservation.addComponent().setValue(new QuantityDt().setValue(mSys).setUnit("mm[Hg]").setSystem("http://unitsofmeasure.org").setCode("mm[Hg]"));
+        mObservation.addComponent().setValue(new QuantityDt().setValue(mDial).setUnit("mm[Hg]").setSystem("http://unitsofmeasure.org").setCode("mm[Hg]"));
+        mObservation.addComponent().setValue(new QuantityDt().setValue(mMEAN).setUnit("mm[Hg]").setSystem("http://unitsofmeasure.org").setCode("mm[Hg]"));
 
-        final String mString = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mObservation);
-        System.out.println(mString);
+        mBundle.addEntry().setFullUrl("urn:uuid:" + UUID.randomUUID().toString()).setResource(mObservation).getRequest()
+                .setUrl("Observation").setMethod(HTTPVerbEnum.POST);
+    }
+
+    private void makePatient(final Bundle mBundle, final Patient patient, final String sTel, final String sBirthDay, final String sGender, final String sGiven, final String sFamily) {
+
+        patient.addIdentifier().setSystem("http:www.knu.ac.kr")
+                .setValue("KNU003");
+
+        patient.addName().addGiven(sGiven).addFamily(sFamily).setUse(NameUseEnum.USUAL);
+
+        patient.addTelecom().setSystem(ContactPointSystemEnum.PHONE)
+                .setValue(sTel).setUse(ContactPointUseEnum.HOME);
+
+        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+
+        Date birth = null;
+        try {
+            birth = dateFormat.parse(sBirthDay);
+        } catch (java.text.ParseException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+        if (sGender.equals("남자")) { patient.setGender(AdministrativeGenderEnum.MALE); }
+        else { patient.setGender(AdministrativeGenderEnum.FEMALE); }
+
+        patient.setBirthDate((DateDt) new DateDt().setValue(birth));
+
+        mBundle.addEntry().setFullUrl("urn:uuid:" + UUID.randomUUID().toString()).setResource(patient).getRequest()
+                .setUrl("Patient").setMethod(HTTPVerbEnum.POST);
+    }
+
+    private void sendServer(final Bundle mBundle, final String sURL) {
+
+        FhirContext ctx = FhirContext.forDstu2();
+        String bundleString = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(mBundle);
+        System.out.println(bundleString);
+
+        final IGenericClient mClient = FhirContext.forDstu2().newRestfulGenericClient(sURL);
+        mClient.create().resource(mBundle).prettyPrint().encodedXml().execute();
     }
 }
