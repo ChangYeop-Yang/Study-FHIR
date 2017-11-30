@@ -3,21 +3,15 @@ import ca.uhn.fhir.model.api.ResourceMetadataKeyEnum;
 import ca.uhn.fhir.model.base.resource.ResourceMetadataMap;
 import ca.uhn.fhir.model.dstu2.composite.*;
 import ca.uhn.fhir.model.dstu2.resource.Observation;
-import ca.uhn.fhir.model.dstu2.resource.Patient;
-import ca.uhn.fhir.model.dstu2.resource.StructureDefinition;
 import ca.uhn.fhir.model.dstu2.valueset.ObservationStatusEnum;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.parser.StrictErrorHandler;
 import ca.uhn.fhir.validation.*;
-import ca.uhn.fhir.validation.schematron.SchematronBaseValidator;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.WildcardFileFilter;
-import org.hl7.fhir.instance.model.Resource;
 import org.hl7.fhir.instance.model.api.IBaseResource;
-import sun.plugin.util.UIUtil;
 
-import java.io.*;
-import java.nio.file.Paths;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -86,13 +80,16 @@ public class Study1127 {
         mFhirValidator.registerValidatorModule(mIValidatorModule);
 
             try {
-                final String nextFileContent = IOUtils.toString(new FileReader("/Users/yeop/Downloads/MyPatient.structuredefinition.xml"));
-                final IBaseResource resource = mFhirContext.newXmlParser().parseResource(nextFileContent);
-
-                final ValidationResult result = mFhirValidator.validateWithResult(resource);
+                final String nextFileContent = IOUtils.toString(new FileReader("C:/Users/양창엽/Desktop/MyPatient.structuredefinition.xml"));
+                final IBaseResource mResource = mFhirContext.newXmlParser().parseResource(nextFileContent);
+                final ValidationResult result = mFhirValidator.validateWithResult(mResource);
 
                 if (result.isSuccessful()) {
-                    System.out.printf("%s\n%s", result.isSuccessful(), nextFileContent);
+                    System.out.printf("%s, %s", result.isSuccessful(), nextFileContent);
+                }
+
+                for (final SingleValidationMessage next : result.getMessages()) {
+                    System.out.printf("%s, %s\n", next.getLocationString(), next.getMessage());
                 }
 
             } catch (IOException e) {
