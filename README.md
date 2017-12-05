@@ -2,6 +2,7 @@
 
 **[Health Informatics Systems] Personal School FHIR Java Project. (Prof. 김일곤)**
 
+
 **⌘ 강의개요 및 목적**
 
 
@@ -39,3 +40,7 @@
 14>오픈소스 VIstA 설치와 운영, 디지텔헬스케어 플랫폼 발전방향
 
 * * *
+
+![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%201.jpg)
+
+![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%202.jpg)
