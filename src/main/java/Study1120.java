@@ -8,12 +8,22 @@ import ca.uhn.fhir.model.primitive.DateDt;
 import ca.uhn.fhir.model.primitive.DateTimeDt;
 import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.rest.client.api.IGenericClient;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHost;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -202,11 +212,29 @@ public class Study1120 {
 
     private void sendServer(final Bundle mBundle, final String sURL) {
 
-        FhirContext ctx = FhirContext.forDstu2();
-        String bundleString = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(mBundle);
-        System.out.println(bundleString);
+        final String mResult = FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(mBundle);
+        System.out.println(mResult);
 
-        final IGenericClient mClient = FhirContext.forDstu2().newRestfulGenericClient(sURL);
-        mClient.create().resource(mBundle).prettyPrint().encodedXml().execute();
+        final RequestConfig.Builder mRequestBuilder = RequestConfig.custom();
+        mRequestBuilder.setProxy(new HttpHost("127.0.0.1", 8888, "http"));
+        HttpClientBuilder mBuilder = HttpClientBuilder.create();
+        mBuilder.setDefaultRequestConfig(mRequestBuilder.build());
+
+        final HttpClient mHttpClient = mBuilder.build();
+        final HttpPost mHttpPost = new HttpPost(sURL);
+
+        mHttpPost.setHeader("Content-Type", "application/fhir+xml");
+        mHttpPost.setEntity(new ByteArrayEntity(mResult.getBytes()));
+
+        try {
+            final HttpResponse mResponse = mHttpClient.execute(mHttpPost);
+            final HttpEntity mHttpEntity = mResponse.getEntity();
+            if (mHttpEntity != null) {
+                final Bundle content = (Bundle) FhirContext.forDstu2().newXmlParser().parseResource(EntityUtils.toString(mHttpEntity));
+                System.out.println(FhirContext.forDstu2().newXmlParser().setPrettyPrint(true).encodeResourceToString(content));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

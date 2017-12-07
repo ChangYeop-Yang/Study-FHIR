@@ -9,6 +9,7 @@ import java.util.Date;
 
 public class Study1023 {
     public static void main(String[] args) {
+
         Patient patient = new Patient();
 
         patient.addIdentifier().setSystem("http:www.knu.ac.kr")
@@ -36,5 +37,6 @@ public class Study1023 {
         String patientString = ctx.newXmlParser().setPrettyPrint(true).encodeResourceToString(patient);
 
         System.out.println(patientString);
+
     }
 }
