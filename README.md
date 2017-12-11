@@ -43,10 +43,10 @@
 
 ![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%206.JPG)
 
-![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%203.JPG)
-
-![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%204.JPG)
-
 ![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%201.JPG)
 
 ![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%202.JPG)
+
+![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%203.JPG)
+
+![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/%5BFHIR%5D%20Presentation/Slide%204.JPG)
