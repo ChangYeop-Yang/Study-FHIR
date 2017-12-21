@@ -33,9 +33,9 @@
 
 **⌘ 강의 계획서**
 
-![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%201.jpg)
-
-![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%202.jpg)
+|강의계획서 ⓐ |강의계획서 ⓑ|
+|:-----------------------------------------:|:---------------------------------------------:|
+|![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%201.jpg)|![Alt text](https://github.com/ChangYeop-Yang/Study-FHIR/blob/master/Course%20Info%202.jpg)|
 
 **⌘ 최종 발표 자료**
 
