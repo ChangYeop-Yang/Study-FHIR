@@ -1,4 +1,4 @@
-# ■ Study-FHIR
+# ■ Study-FHIR <kbd>[Kyungpook National University](http://www.knu.ac.kr/wbbs/)</kbd>
 [Health Informatics Systems] Personal School FHIR Java Project. (Prof. 김일곤)
 
 ## ★ Course Goals and Objectives
